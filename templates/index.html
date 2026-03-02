@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TruthLens — AI Fake News Detector</title>
+  <meta name="description" content="TruthLens uses advanced AI and NLP to detect fake news with high accuracy. Powered by TF-IDF and BiLSTM deep learning models." />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+<!-- ─── Particle Background ────────────────────────────────────────────── -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- ─── Navigation ───────────────────────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">🔍</span>
+    <span class="brand-text">TruthLens <sup class="brand-badge">AI</sup></span>
+  </div>
+  <div class="nav-links">
+    <a href="#analyzer" class="nav-link">Analyzer</a>
+    <a href="#how-it-works" class="nav-link">How It Works</a>
+    <a href="#dashboard" class="nav-link">Dashboard</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-theme" id="themeToggle" title="Toggle theme">🌙</button>
+    <span class="model-badge" id="navModelBadge">
+      <span class="pulse-dot"></span> AI Ready
+    </span>
+  </div>
+</nav>
+
+<!-- ─── Hero Section ─────────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-tag animate-in">🚀 Advanced AI-Powered Detection</div>
+    <h1 class="hero-title animate-in delay-1">
+      Can You <span class="gradient-text">Trust</span> What<br/>You Read?
+    </h1>
+    <p class="hero-subtitle animate-in delay-2">
+      TruthLens uses state-of-the-art NLP and deep learning to analyze news articles
+      and detect misinformation with <strong>95%+ accuracy</strong>.
+    </p>
+    <div class="hero-cta animate-in delay-3">
+      <a href="#analyzer" class="btn-primary">
+        <span>Analyze Article</span>
+        <span class="btn-arrow">→</span>
+      </a>
+      <a href="#how-it-works" class="btn-ghost">How It Works</a>
+    </div>
+    <div class="hero-stats animate-in delay-4">
+      <div class="hero-stat">
+        <span class="hero-stat-num" id="heroTotal">0</span>
+        <span class="hero-stat-label">Analyzed</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">95%+</span>
+        <span class="hero-stat-label">Accuracy</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">2</span>
+        <span class="hero-stat-label">AI Models</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual animate-in delay-2">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="floating-card card-fake">
+      <div class="fc-icon">⚠️</div>
+      <div class="fc-content">
+        <div class="fc-text">Suspicious content detected</div>
+        <div class="fc-bar"><div class="fc-fill fake-fill"></div></div>
+      </div>
+    </div>
+    <div class="floating-card card-real">
+      <div class="fc-icon">✅</div>
+      <div class="fc-content">
+        <div class="fc-text">Credible source verified</div>
+        <div class="fc-bar"><div class="fc-fill real-fill"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Analyzer Section ─────────────────────────────────────────────────── -->
+<section class="section" id="analyzer">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">News <span class="gradient-text">Analyzer</span></h2>
+      <p class="section-sub">Paste a headline, article, or any news text to get an instant AI verdict.</p>
+    </div>
+
+    <div class="analyzer-grid">
+      <!-- Input Panel -->
+      <div class="glass-card input-panel">
+        <div class="input-row">
+          <div class="form-group">
+            <label class="form-label">Article Title <span class="optional">(optional)</span></label>
+            <input type="text" id="titleInput" class="form-input"
+                   placeholder="e.g. Scientists discover cure for all diseases…"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Article Content / News Text
+            <span class="char-count" id="charCount">0 words</span>
+          </label>
+          <textarea id="textInput" class="form-textarea"
+                    placeholder="Paste the full news article, headline, or social media post here…
+                    
+Try: 'BREAKING: Scientists PROVE that drinking bleach cures cancer — The government is hiding this bombshell truth!'"></textarea>
+        </div>
+
+        <div class="input-controls">
+          <div class="model-selector">
+            <label class="form-label">AI Model</label>
+            <div class="model-tabs">
+              <button class="model-tab active" data-model="tfidf" id="tab-tfidf">
+                <span class="model-tab-icon">⚡</span>
+                <span>TF-IDF</span>
+                <span class="model-tab-tag">Fast</span>
+              </button>
+              <button class="model-tab" data-model="lstm" id="tab-lstm">
+                <span class="model-tab-icon">🧠</span>
+                <span>BiLSTM</span>
+                <span class="model-tab-tag">Deep</span>
+              </button>
+              <button class="model-tab" data-model="ensemble" id="tab-ensemble">
+                <span class="model-tab-icon">🔮</span>
+                <span>Ensemble</span>
+                <span class="model-tab-tag">Best</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="quick-tests">
+            <span class="form-label">Quick Tests:</span>
+            <button class="quick-btn fake-btn" onclick="loadSample('fake')">📰 Fake Sample</button>
+            <button class="quick-btn real-btn" onclick="loadSample('real')">✅ Real Sample</button>
+            <button class="quick-btn" onclick="clearAll()">🗑 Clear</button>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">
+          <span id="analyzeBtnText">🔍 Analyze Now</span>
+          <div class="btn-spinner hidden" id="btnSpinner"></div>
+        </button>
+      </div>
+
+      <!-- Result Panel -->
+      <div class="glass-card result-panel" id="resultPanel">
+        <div class="result-placeholder" id="resultPlaceholder">
+          <div class="placeholder-icon">🔍</div>
+          <p>Your analysis results will appear here.</p>
+          <p class="placeholder-sub">Enter some text and click <strong>Analyze Now</strong>.</p>
+        </div>
+
+        <!-- Verdict -->
+        <div class="result-content hidden" id="resultContent">
+          <div class="verdict-header" id="verdictHeader">
+            <div class="verdict-icon" id="verdictIcon">❓</div>
+            <div class="verdict-info">
+              <div class="verdict-label" id="verdictLabel">—</div>
+              <div class="verdict-model" id="verdictModel">—</div>
+            </div>
+            <div class="verdict-time" id="verdictTime">—</div>
+          </div>
+
+          <!-- Confidence Gauge -->
+          <div class="gauge-section">
+            <div class="gauge-wrap">
+              <svg class="gauge-svg" viewBox="0 0 200 120">
+                <path class="gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100"/>
+                <path class="gauge-fill" id="gaugeFill" d="M 20 100 A 80 80 0 0 1 180 100"
+                      stroke-dasharray="0 251"/>
+                <text class="gauge-pct" id="gaugePct" x="100" y="95" text-anchor="middle">0%</text>
+                <text class="gauge-lbl" x="100" y="112" text-anchor="middle">Confidence</text>
+              </svg>
+            </div>
+            <div class="confidence-bars">
+              <div class="conf-bar-row">
+                <span class="conf-bar-label">FAKE</span>
+                <div class="conf-bar-track">
+                  <div class="conf-bar-fill fake-bar" id="fakeBar"></div>
+                </div>
+                <span class="conf-bar-pct" id="fakePct">—</span>
+              </div>
+              <div class="conf-bar-row">
+                <span class="conf-bar-label">REAL</span>
+                <div class="conf-bar-track">
+                  <div class="conf-bar-fill real-bar" id="realBar"></div>
+                </div>
+                <span class="conf-bar-pct" id="realPct">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Word Highlights -->
+          <div class="highlights-section" id="highlightsSection">
+            <div class="highlights-title">
+              🎯 Word Analysis
+              <span class="highlights-legend">
+                <span class="hl-dot fake-dot"></span>Fake indicators
+                <span class="hl-dot real-dot"></span>Real indicators
+              </span>
+            </div>
+            <div class="highlighted-text" id="highlightedText"></div>
+          </div>
+
+          <!-- Meta Info -->
+          <div class="result-meta">
+            <div class="meta-item">
+              <span class="meta-label">Words analyzed</span>
+              <span class="meta-val" id="wordCount">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Response time</span>
+              <span class="meta-val" id="elapsedMs">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Model</span>
+              <span class="meta-val" id="modelName">—</span>
+            </div>
+          </div>
+
+          <!-- Share -->
+          <div class="share-row">
+            <button class="share-btn" onclick="shareResult()">🔗 Share Result</button>
+            <button class="share-btn" onclick="copyResult()">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How It Works ─────────────────────────────────────────────────────── -->
+<section class="section bg-alt" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">How <span class="gradient-text">It Works</span></h2>
+      <p class="section-sub">A two-stage pipeline combining classical NLP with deep learning.</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card glass-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">✂️</div>
+        <h3 class="step-title">Text Preprocessing</h3>
+        <p class="step-desc">Raw text is cleaned, lowercased, stopwords removed, and words are lemmatized using NLTK to extract meaningful tokens.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card glass-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">📊</div>
+        <h3 class="step-title">Feature Extraction</h3>
+        <p class="step-desc">TF-IDF (up to 50K n-gram features) captures word importance patterns. Title is weighted 3× since fake news is tone-heavy in headlines.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card glass-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🧠</div>
+        <h3 class="step-title">AI Classification</h3>
+        <p class="step-desc">A Logistic Regression or BiLSTM neural network classifies the article. Ensemble mode blends both for maximum accuracy.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card glass-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">💡</div>
+        <h3 class="step-title">Explainability</h3>
+        <p class="step-desc">Word importance scores highlight which words pushed the verdict. Red = fake indicator. Green = real indicator.</p>
+      </div>
+    </div>
+
+    <div class="models-showcase">
+      <div class="model-card glass-card">
+        <div class="model-icon">⚡</div>
+        <h3>TF-IDF + Logistic Regression</h3>
+        <div class="model-tags">
+          <span class="tag">Fast (&lt;50ms)</span>
+          <span class="tag">~95% accuracy</span>
+          <span class="tag">Explainable</span>
+        </div>
+        <p>Classical NLP approach using Term Frequency–Inverse Document Frequency with n-gram features (1 to 3-grams) and regularized logistic regression. Interpretable via feature coefficients.</p>
+      </div>
+      <div class="model-card glass-card featured">
+        <div class="model-badge-top">⭐ Recommended</div>
+        <div class="model-icon">🧠</div>
+        <h3>BiLSTM + Conv1D</h3>
+        <div class="model-tags">
+          <span class="tag">Deep Learning</span>
+          <span class="tag">~97% accuracy</span>
+          <span class="tag">Context-aware</span>
+        </div>
+        <p>Bidirectional LSTM processes word sequences in both directions, capturing long-range dependencies. Conv1D layer detects local patterns before the BiLSTM layer.</p>
+      </div>
+      <div class="model-card glass-card">
+        <div class="model-icon">🔮</div>
+        <h3>Ensemble Model</h3>
+        <div class="model-tags">
+          <span class="tag">Best of both</span>
+          <span class="tag">Weighted avg</span>
+          <span class="tag">Most robust</span>
+        </div>
+        <p>Weighted combination: 40% TF-IDF + 60% BiLSTM. Reduces individual model errors and provides the most reliable detection across diverse news styles.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Dashboard Section ───────────────────────────────────────────────── -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Live <span class="gradient-text">Dashboard</span></h2>
+      <p class="section-sub">Real-time statistics from your analysis session.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card glass-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">Total Analyzed</div>
+      </div>
+      <div class="stat-card glass-card fake-card">
+        <div class="stat-icon">🚫</div>
+        <div class="stat-num" id="statFake">0</div>
+        <div class="stat-label">Fake Detected</div>
+      </div>
+      <div class="stat-card glass-card real-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num" id="statReal">0</div>
+        <div class="stat-label">Real Confirmed</div>
+      </div>
+      <div class="stat-card glass-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-num" id="statAvgConf">—</div>
+        <div class="stat-label">Avg Confidence</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Chart -->
+      <div class="glass-card chart-card">
+        <h3 class="card-title">Detection Breakdown</h3>
+        <div class="chart-wrap">
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="chart-legend" id="chartLegend">
+          <span class="cl-item"><span class="cl-dot fake-dot"></span>Fake</span>
+          <span class="cl-item"><span class="cl-dot real-dot"></span>Real</span>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="glass-card history-card">
+        <div class="history-header">
+          <h3 class="card-title">Recent Predictions</h3>
+          <button class="clear-hist-btn" onclick="clearHistory()">Clear</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-history">
+            <span>📭</span>
+            <span>No predictions yet. Analyze some news!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Batch Analyzer ──────────────────────────────────────────────────── -->
+<section class="section bg-alt" id="batch">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Batch <span class="gradient-text">Analyzer</span></h2>
+      <p class="section-sub">Analyze multiple headlines or articles at once. One per line.</p>
+    </div>
+
+    <div class="glass-card batch-card">
+      <textarea id="batchInput" class="form-textarea batch-textarea"
+                placeholder="Enter one news headline or text per line:
+
+BREAKING: Aliens land on Capitol Hill, government in hiding!
+The Federal Reserve raised interest rates by 25 basis points.
+SHOCKING: Eating garlic at midnight cures all diseases permanently.
+Scientists publish new research on renewable energy efficiency."></textarea>
+      <div class="batch-controls">
+        <select id="batchModel" class="form-select">
+          <option value="tfidf">⚡ TF-IDF (Fast)</option>
+          <option value="lstm">🧠 BiLSTM (Deep)</option>
+          <option value="ensemble">🔮 Ensemble</option>
+        </select>
+        <button class="btn-primary" onclick="runBatch()">
+          <span id="batchBtnText">🔍 Analyze All</span>
+        </button>
+      </div>
+      <div id="batchResults" class="batch-results hidden"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ──────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="brand-icon">🔍</span>
+      <span class="brand-text">TruthLens <sup>AI</sup></span>
+    </div>
+    <p class="footer-desc">
+      Advanced Fake News Detection · NLP + Deep Learning · Portfolio Project
+    </p>
+    <div class="footer-tech">
+      <span class="tech-tag">Python</span>
+      <span class="tech-tag">Flask</span>
+      <span class="tech-tag">TensorFlow</span>
+      <span class="tech-tag">scikit-learn</span>
+      <span class="tech-tag">NLTK</span>
+      <span class="tech-tag">BiLSTM</span>
+    </div>
+    <p class="footer-credit">Built with ❤️ as an advanced 3rd-sem portfolio upgrade</p>
+  </div>
+</footer>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/main.js"></script>
+</body>
+</html>
