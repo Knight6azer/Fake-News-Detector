@@ -5,6 +5,10 @@ Serves the web UI and handles all prediction requests.
 
 import os
 import sys
+import io
+# Fix stdout encoding on Windows so emoji/Unicode prints don't crash
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 import json
 import time
 import uuid
@@ -233,7 +237,7 @@ def api_train():
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     print("=" * 60)
-    print("  🔍  Fake News Detector — Advanced Portfolio Edition")
+    print("  [+] Fake News Detector - Advanced Portfolio Edition")
     print("=" * 60)
     print("  Starting server at http://localhost:5000")
     print("  Auto-training model if not already trained...")

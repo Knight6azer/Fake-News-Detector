@@ -25,6 +25,7 @@ A production-ready, full-stack fake news detection web application. Originally b
 | **REST API** | 6 clean JSON endpoints for external integration |
 | **Auto-Training** | Model trains automatically on first run if no saved model found |
 | **Dark/Light Mode** | Glassmorphism UI with theme toggle |
+| **Developer Profile** | Dedicated section showcasing the creator (Knight6azer) |
 | **Particle Animation** | Dynamic particle network in hero background |
 
 ---
