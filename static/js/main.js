@@ -120,7 +120,7 @@ async function checkModelStatus() {
 const SAMPLES = {
   fake: {
     title: 'BOMBSHELL: Government ADMITS 5G Towers Cause COVID-19, Mainstream Media HIDING Truth!',
-    text:  'SHOCKING new leaked documents from a Pentagon whistleblower PROVE beyond any doubt that 5G radiation activates dormant viruses in the human body. Mainstream media is CENSORING this explosive bombshell. The deep state and globalist elites are desperately trying to suppress this information. Share before they DELETE this! Scientists who challenged this secret have been SILENCED. The truth is finally being REVEALED — the government has known since 2020 and has been HIDING it from you. Wake up! This is not a drill. Your family's lives are at stake.',
+    text:  'SHOCKING new leaked documents from a Pentagon whistleblower PROVE beyond any doubt that 5G radiation activates dormant viruses in the human body. Mainstream media is CENSORING this explosive bombshell. The deep state and globalist elites are desperately trying to suppress this information. Share before they DELETE this! Scientists who challenged this secret have been SILENCED. The truth is finally being REVEALED — the government has known since 2020 and has been HIDING it from you. Wake up! This is not a drill. Your family\'s lives are at stake.',
   },
   real: {
     title: 'Federal Reserve Holds Interest Rates Steady Amid Stable Inflation Data',
